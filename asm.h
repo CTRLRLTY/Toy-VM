@@ -2,6 +2,14 @@
 #define TOY_ASM_H
 
 typedef enum TI_ASM {
+    ASM_HEADSTART,
+    ASM_H_CONSTANTOFS,
+    ASM_H_CONSTANTSZ,
+    ASM_H_BODYOFS,
+    ASM_H_BODYSZ,
+
+    ASM_CONSTANT,
+
     ASM_SET_R0_IMM,
     ASM_SET_R1_IMM,
     ASM_SET_R2_IMM,

@@ -1,16 +1,16 @@
 #include "vm.h"
 
+#include <string.h>
+
 void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
 #define FORWARD(amount) i += amount
 #define ADD_REG_REG(regnum1, regnum2) \
-    vm->reg_int[regnum1] += vm->reg_int[regnum2]
+        vm->reg_int[regnum1] += vm->reg_int[regnum2]
 
 #define SET_REG_IMM(regnum) \
-    { \
         FORWARD(1); \
-        uint8_t temp = code[i]; \
-        vm->reg_int[regnum] = temp; \
-    }
+        memcpy(&vm->reg_int[regnum], &code[i], 8); \
+        FORWARD(8);
 
 
     for (int i = 0; i < size; ++i) {
@@ -62,3 +62,21 @@ void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
 }
 
 
+
+void ti_read_constant(ti_vm *vm, uint8_t code[], size_t size) {
+#define FORWARD(amount) i += amount
+    for (size_t i = 0; i < size; ++i) {
+        switch (code[i]) {
+            case ASM_CONSTANT: {
+                FORWARD(1);
+                size_t sz = code[i];
+                FORWARD(1);
+                char constant[sz];
+                memcpy(&constant, &code[i], sz);
+                FORWARD(sz);
+                break;
+            }
+        }
+    }
+#undef FORWARD
+}

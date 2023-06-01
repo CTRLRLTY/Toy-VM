@@ -2,9 +2,9 @@
 
 int main(void) {
     ti_vm vm;
-    uint8_t code[] = {ASM_SET_R0_IMM, 1 ,ASM_ADD_R0_R0};
+    uint8_t code[] = {ASM_SET_R0_IMM, 2, 0, 0, 0, 0, 0, 0, 0};
 
-    ti_execute_byte(&vm, code, 3);
+    ti_execute_byte(&vm, code, 9);
 
     return 0;
 }

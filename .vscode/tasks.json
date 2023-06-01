@@ -7,6 +7,7 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
+                "-std=gnu17",
                 "main.c",
                 "vm.c",
                 "-o",
