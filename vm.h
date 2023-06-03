@@ -8,6 +8,8 @@
 
 #define TI_STACK_MIN 256
 
+typedef int64_t opsize;
+
 typedef struct ti_vm {
    int64_t *stack;
    int64_t *stackptr;
@@ -17,6 +19,5 @@ typedef struct ti_vm {
 
 void ti_init_vm(ti_vm *vm);
 void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size);
-void ti_read_constant(ti_vm *vm, uint8_t code[], size_t size);
 
 #endif // TOY_VM_H
