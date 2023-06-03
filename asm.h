@@ -2,8 +2,7 @@
 #define TOY_ASM_H
 
 typedef enum TI_ASM {
-    ASM_MARK,
-
+    ASM_PRINT,
     ASM_PUSH_R0,
     ASM_PUSH_R1,
     ASM_PUSH_R2,

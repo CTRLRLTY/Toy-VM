@@ -13,9 +13,13 @@ int main(void) {
     //     ASM_PUSH_R0
     // };
 
+    // uint8_t code[] = {
+    //     ASM_SET_R0_IMM, 1, 0, 0, 0, 0, 0, 0, 0,
+    //     ASM_ADD, 0b11000000
+    // };
+
     uint8_t code[] = {
-        ASM_SET_R0_IMM, 1, 0, 0, 0, 0, 0, 0, 0,
-        ASM_ADD, 0b11000000
+        ASM_PRINT, 12, 'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd','\n'
     };
 
     ti_execute_byte(&vm, code, sizeof(code)/sizeof(code[0]));

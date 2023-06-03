@@ -38,12 +38,12 @@ static void handle_modbyte(ti_vm *vm, uint8_t *code, mbhandlerFn handler) {
     uint8_t reg = *code >> 3 & 0b111; 
     uint8_t rm = *code & 0b111; 
 
-    opsize *left = &vm->reg_int[reg];
+    opsize *left = &vm->gpr[reg];
 
     switch (mod)
     {
         case 0b11:
-            opsize *right = &vm->reg_int[rm];
+            opsize *right = &vm->gpr[rm];
             code++;
             handler(left, right, code);
     }
@@ -51,17 +51,29 @@ static void handle_modbyte(ti_vm *vm, uint8_t *code, mbhandlerFn handler) {
 
 void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
 #define FORWARD(amount) code += amount
-#define PUSH_REG(regnum) push(vm, &vm->reg_int[regnum]); 
+#define PUSH_REG(regnum) push(vm, &vm->gpr[regnum]); 
 
 #define SET_REG_IMM(regnum) { \
         FORWARD(1); \
-        memcpy(&vm->reg_int[regnum], code, 8); \
+        memcpy(&vm->gpr[regnum], code, 8); \
         FORWARD(8); }
     
     uint8_t *base = code;
 
     while (code - base < size) {
         switch (*code) {
+            case ASM_PRINT: {
+                FORWARD(1);
+                uint8_t sz = *code;
+                FORWARD(1);
+                uint8_t buf[sz+1];
+                buf[sz] = '\0';
+                memcpy(buf, code, sz);
+                FORWARD(sz);
+                printf(buf);
+                break;
+            }
+
             case ASM_PUSH_R0: PUSH_REG(0); break;
             case ASM_PUSH_R1: PUSH_REG(1); break;
             case ASM_PUSH_R2: PUSH_REG(2); break;
@@ -72,7 +84,6 @@ void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
             case ASM_SET_R2_IMM: SET_REG_IMM(2); break;
             case ASM_SET_R3_IMM: SET_REG_IMM(3); break;
 
-            // case ASM_ADD_R0_R0: ADD_REG_REG(0, 0); break;
             case ASM_ADD: {
                 FORWARD(1);
                 handle_modbyte(vm, code, handle_add);
@@ -84,6 +95,5 @@ void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
 
 #undef PUSH_REG 
 #undef SET_REG_IMM
-#undef ADD_REG_REG
 #undef FORWARD
 }
