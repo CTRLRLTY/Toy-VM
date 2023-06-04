@@ -27,10 +27,22 @@ static void push(ti_vm *vm, int64_t *value) {
     }
 }
 
-typedef void (*mbhandlerFn)(opsize *left, opsize *right, uint8_t* code);
+typedef void (*mbhandlerFn)(ti_vm *vm, opsize* args);
 
-static void handle_add(opsize *left, opsize *right, uint8_t* code) {
+static void handle_add(ti_vm *vm, opsize *args) {
+    int64_t *left = (int64_t*)args[0];
+    int64_t *right = (int64_t*)args[1];
     *left += *right;
+}
+
+static void handle_push(ti_vm *vm, opsize *args) {
+    push(vm, (int64_t*)args[0]);
+}
+
+static void handle_mov(ti_vm *vm, opsize *args) {
+    int64_t *left = (int64_t*)args[0];
+    int64_t *right = (int64_t*)args[1];
+    memcpy(left, right, sizeof(int64_t));
 }
 
 static void handle_modbyte(ti_vm *vm, uint8_t *code, mbhandlerFn handler) {
@@ -39,25 +51,34 @@ static void handle_modbyte(ti_vm *vm, uint8_t *code, mbhandlerFn handler) {
     uint8_t rm = *code & 0b111; 
 
     opsize *left = &vm->gpr[reg];
+    code++; // consume modbyte
 
     switch (mod)
     {
-        case 0b11:
+        case 0b11: {
             opsize *right = &vm->gpr[rm];
-            code++;
-            handler(left, right, code);
+            opsize *args[] = {left, right};
+            handler(vm, (opsize*)args);
+            break;
+        }
+        case 0b10: {
+            opsize *args[] = {left};
+            handler(vm, (opsize*)args);
+            break;
+        }
+        case 0b01: {
+            opsize buf = 0;
+            memcpy(&buf, code, rm+1);
+            opsize *args[] = {left, &buf};
+            handler(vm, (opsize*)args);
+            break;
+        }
     }
 }
 
 void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
 #define FORWARD(amount) code += amount
-#define PUSH_REG(regnum) push(vm, &vm->gpr[regnum]); 
 
-#define SET_REG_IMM(regnum) { \
-        FORWARD(1); \
-        memcpy(&vm->gpr[regnum], code, 8); \
-        FORWARD(8); }
-    
     uint8_t *base = code;
 
     while (code - base < size) {
@@ -73,17 +94,16 @@ void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
                 printf(buf);
                 break;
             }
-
-            case ASM_PUSH_R0: PUSH_REG(0); break;
-            case ASM_PUSH_R1: PUSH_REG(1); break;
-            case ASM_PUSH_R2: PUSH_REG(2); break;
-            case ASM_PUSH_R3: PUSH_REG(3); break;
-
-            case ASM_SET_R0_IMM: SET_REG_IMM(0); break;
-            case ASM_SET_R1_IMM: SET_REG_IMM(1); break;
-            case ASM_SET_R2_IMM: SET_REG_IMM(2); break;
-            case ASM_SET_R3_IMM: SET_REG_IMM(3); break;
-
+            case ASM_MOV: {
+                FORWARD(1);
+                handle_modbyte(vm, code, handle_mov);
+                break;
+            };
+            case ASM_PUSH: {
+                FORWARD(1);
+                handle_modbyte(vm, code, handle_push);
+                break;
+            }
             case ASM_ADD: {
                 FORWARD(1);
                 handle_modbyte(vm, code, handle_add);
@@ -93,7 +113,5 @@ void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
     }
 
 
-#undef PUSH_REG 
-#undef SET_REG_IMM
 #undef FORWARD
 }
