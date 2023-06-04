@@ -6,6 +6,7 @@ typedef enum TI_ASM {
 
     ASM_MOV,
     ASM_ADD,
+    ASM_SUB,
     ASM_PUSH,
 } TI_ASM;
 

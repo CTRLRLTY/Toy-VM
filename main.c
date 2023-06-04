@@ -13,10 +13,14 @@ int main(void) {
     //     ASM_PUSH_R0
     // };
 
+    // uint8_t code[] = {
+    //     ASM_MOV, 0b01000000, 1,
+    //     ASM_PUSH, 0b10000000
+    // };
+
     uint8_t code[] = {
-        // ASM_SET_R0_IMM, 1, 0, 0, 0, 0, 0, 0, 0,
         ASM_MOV, 0b01000000, 1,
-        ASM_PUSH, 0b10000000
+        ASM_SUB, 0b01000000, 1
     };
 
     // uint8_t code[] = {
