@@ -2,6 +2,7 @@
 #define TOY_ASM_H
 
 typedef enum TI_ASM {
+    ASM_CMP,
     ASM_JMP,
     ASM_PUSH_REG,
     ASM_SET_IMM2REG,

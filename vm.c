@@ -60,6 +60,11 @@ static void imm2reg(ParseOps *ops) {
     ops->immsize = lnib;
 }
 
+static void compare(ParseOps *ops) {
+    memcpy(&ops->vm->cmpbuf1, ops->regdst, sizeof(opsize));
+    memcpy(&ops->vm->cmpbuf2, ops->regsrc, sizeof(opsize));
+}
+
 static void jmp(ParseOps *ops) {
     uint8_t bytesz = *ops->vm->codeptr++;
     opsize index = 0;
@@ -105,6 +110,10 @@ void ti_execute_byte(ti_vm *vm) {
 
     while (vm->codeptr - vm->codebase < vm->codesz) {
         switch (*vm->codeptr) {
+            case ASM_CMP: {
+                chain_parse(vm, 2, reg2reg, compare);
+                break;
+            }
             case ASM_JMP: {
                 chain_parse(vm, 1, jmp);
                 break;

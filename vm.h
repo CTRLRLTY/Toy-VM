@@ -19,6 +19,9 @@ typedef struct ti_vm {
    int64_t *stackptr;
    size_t stacksz;
    int64_t gpr[4];
+
+   opsize cmpbuf1;
+   opsize cmpbuf2;
 } ti_vm;
 
 void ti_init_vm(ti_vm *vm);
