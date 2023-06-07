@@ -11,6 +11,10 @@
 typedef int64_t opsize;
 
 typedef struct ti_vm {
+   uint8_t *codebase;
+   uint8_t *codeptr;
+   size_t codesz;
+
    int64_t *stack;
    int64_t *stackptr;
    size_t stacksz;
@@ -18,6 +22,6 @@ typedef struct ti_vm {
 } ti_vm;
 
 void ti_init_vm(ti_vm *vm);
-void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size);
+void ti_execute_byte(ti_vm *vm);
 
 #endif // TOY_VM_H

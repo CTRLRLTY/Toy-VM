@@ -18,10 +18,19 @@ int main(void) {
     //     ASM_PUSH, 0b10000000
     // };
 
+    // uint8_t code[] = {
+    //     ASM_GOTO, 0b00000001, 11,
+    //     ASM_MOV,  0b01000000, 1,
+    //     ASM_SUB,  0b01000000, 1
+    //     ASM_MOV,  0b01000000, 5,
+    // };
+
     uint8_t code[] = {
-        ASM_MOV, 0b01000000, 1,
-        ASM_SUB, 0b01000000, 1
+        ASM_SET_IMM2REG,  0b00000001, 5,
+        ASM_ADD_REG2REG,  0b00000000,
+        ASM_PUSH_REG,  0b00000000,
     };
+ 
 
     // uint8_t code[] = {
     //     ASM_SET_R0_IMM, 1, 0, 0, 0, 0, 0, 0, 0,
@@ -32,7 +41,10 @@ int main(void) {
     //     ASM_PRINT, 12, 'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd','\n'
     // };
 
-    ti_execute_byte(&vm, code, sizeof(code)/sizeof(code[0]));
+    vm.codebase = code;
+    vm.codeptr = vm.codebase;
+    vm.codesz = sizeof(code)/sizeof(code[0]);
+    ti_execute_byte(&vm);
 
     return 0;
 }

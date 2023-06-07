@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 
 void ti_init_vm(ti_vm *vm) {
@@ -27,103 +28,90 @@ static void push(ti_vm *vm, int64_t *value) {
     }
 }
 
-typedef void (*mbhandlerFn)(ti_vm *vm, opsize* args);
+typedef struct PasrseOps {
+    ti_vm *vm;
+    uint8_t immsize;
+    opsize *regsrc;
+    opsize *regdst;
+} ParseOps;
 
-static void handle_add(ti_vm *vm, opsize *args) {
-    int64_t *left = (int64_t*)args[0];
-    int64_t *right = (int64_t*)args[1];
-    *left += *right;
+typedef void (*parsefn)(ParseOps *ops);
+
+static void regselect (ParseOps *ops) {
+    uint8_t index = *ops->vm->codeptr;
+    ops->regdst = &ops->vm->gpr[index];
 }
 
-static void handle_sub(ti_vm *vm, opsize *args) {
-    int64_t *left = (int64_t*)args[0];
-    int64_t *right = (int64_t*)args[1];
-    *left -= *right;
+static void reg2reg(ParseOps *ops) {
+    uint8_t byte = *ops->vm->codeptr;
+    uint8_t lnib = byte & 0b1111; 
+    uint8_t hnib = byte >> 4 & 0b1111;
+    ops->vm->codeptr++;
+    ops->regdst = &ops->vm->gpr[lnib];
+    ops->regsrc = &ops->vm->gpr[hnib];
 }
 
-static void handle_push(ti_vm *vm, opsize *args) {
-    push(vm, (int64_t*)args[0]);
+static void imm2reg(ParseOps *ops) {
+    uint8_t byte = *ops->vm->codeptr;
+    uint8_t lnib = byte & 0b1111; 
+    uint8_t hnib = byte >> 4 & 0b1111;
+    ops->vm->codeptr++;
+    ops->regdst = &ops->vm->gpr[hnib];
+    ops->immsize = lnib;
 }
 
-static void handle_mov(ti_vm *vm, opsize *args) {
-    int64_t *left = (int64_t*)args[0];
-    int64_t *right = (int64_t*)args[1];
-    memcpy(left, right, sizeof(int64_t));
+static void push_reg(ParseOps *ops) {
+    push(ops->vm, ops->regdst);
 }
 
-static void handle_modbyte(ti_vm *vm, uint8_t **codeptr, mbhandlerFn handler) {
-    uint8_t mod = **codeptr >> 6;
-    uint8_t reg = **codeptr >> 3 & 0b111; 
-    uint8_t rm = **codeptr & 0b111; 
-    (*codeptr)++;
+static void add_reg2reg(ParseOps *ops) {
+    *ops->regsrc += *ops->regdst;
+}
 
-    opsize *left = &vm->gpr[reg];
+static void set_imm2reg(ParseOps *ops) {
+    *ops->regdst = 0;
+    memcpy(ops->regdst, ops->vm->codeptr, ops->immsize);
+    ops->vm->codeptr += ops->immsize;
+}
 
-    switch (mod)
-    {
-        case 0b11: {
-            opsize *right = &vm->gpr[rm];
-            opsize *args[] = {left, right};
-            handler(vm, (opsize*)args);
-            break;
-        }
-        case 0b10: {
-            opsize *args[] = {left};
-            handler(vm, (opsize*)args);
-            break;
-        }
-        case 0b01: {
-            opsize buf = 0;
-            memcpy(&buf, *codeptr, rm+1);
-            *codeptr += rm+1;
-            opsize *args[] = {left, &buf};
-            handler(vm, (opsize*)args);
-            break;
-        }
+static void chain_parse(ti_vm* vm, size_t count, ...) {
+    va_list parsers;
+    ParseOps ops;
+
+    ops.regsrc = NULL;
+    ops.regdst = NULL;
+    ops.vm = vm;
+
+    ops.vm->codeptr++; // consume opcode
+
+    va_start(parsers, count);
+    for(size_t i = 0; i < count; ++i) {
+        parsefn fn = va_arg(parsers, parsefn);
+        fn(&ops);
     }
+
+    va_end(parsers);
 }
 
-void ti_execute_byte(ti_vm *vm, uint8_t code[], size_t size) {
-#define FORWARD(amount) code += amount
+void ti_execute_byte(ti_vm *vm) {
+#define FORWARD(amount) vm->codeptr += amount
 
-    uint8_t *base = code;
-
-    while (code - base < size) {
-        switch (*code) {
-            case ASM_PRINT: {
-                FORWARD(1);
-                uint8_t sz = *code;
-                FORWARD(1);
-                uint8_t buf[sz+1];
-                buf[sz] = '\0';
-                memcpy(buf, code, sz);
-                FORWARD(sz);
-                printf(buf);
+    while (vm->codeptr - vm->codebase < vm->codesz) {
+        switch (*vm->codeptr) {
+            case ASM_PUSH_REG: {
+                chain_parse(vm, 2, regselect, push_reg);
                 break;
             }
-            case ASM_MOV: {
-                FORWARD(1);
-                handle_modbyte(vm, &code, handle_mov);
-                break;
-            };
-            case ASM_PUSH: {
-                FORWARD(1);
-                handle_modbyte(vm, &code, handle_push);
+            case ASM_SET_IMM2REG: {
+                chain_parse(vm, 2, imm2reg, set_imm2reg);
                 break;
             }
-            case ASM_ADD: {
-                FORWARD(1);
-                handle_modbyte(vm, &code, handle_add);
+            case ASM_ADD_REG2REG: {
+                chain_parse(vm, 2, reg2reg, add_reg2reg);
                 break;
             } 
-            case ASM_SUB: {
-                FORWARD(1);
-                handle_modbyte(vm, &code, handle_sub);
-                break;
-            }
         }
     }
-
 
 #undef FORWARD
 }
