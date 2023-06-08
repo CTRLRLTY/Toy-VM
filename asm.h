@@ -9,9 +9,14 @@ typedef enum TI_ASM {
     ASM_JMP_LE,
     ASM_JMP_GT,
     ASM_JMP_LT,
+
     ASM_PUSH_REG,
+
     ASM_SET_IMM2REG,
     ASM_ADD_REG2REG,
+    ASM_SUB_REG2REG,
+
+    ASM_EXCEED = 256
 } TI_ASM;
 
 #endif // TOY_ASM_H

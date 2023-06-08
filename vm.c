@@ -120,6 +120,10 @@ static void add_reg2reg(ParseOps *ops) {
     *ops->regsrc += *ops->regdst;
 }
 
+static void sub_reg2reg(ParseOps *ops) {
+    *ops->regsrc -= *ops->regdst;
+}
+
 static void set_imm2reg(ParseOps *ops) {
     *ops->regdst = 0;
     memcpy(ops->regdst, ops->vm->codeptr, ops->immsize);
@@ -160,6 +164,7 @@ void ti_execute_byte(ti_vm *vm) {
             case ASM_PUSH_REG: chain_parse(vm, 2, regselect, push_reg); break;
             case ASM_SET_IMM2REG: chain_parse(vm, 2, imm2reg, set_imm2reg); break;
             case ASM_ADD_REG2REG: chain_parse(vm, 2, reg2reg, add_reg2reg); break;
+            case ASM_SUB_REG2REG: chain_parse(vm, 2, reg2reg, sub_reg2reg); break;
         }
     }
 

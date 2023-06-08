@@ -12,7 +12,7 @@ int main(void) {
         ASM_CMP,  0b00000000,
         ASM_JMP_LT, 1, 12,
         ASM_PUSH_REG,  0b00000000,
-        ASM_ADD_REG2REG,  0b00000000
+        ASM_SUB_REG2REG, 0b00000000, 
     };
  
     vm.codebase = code;
