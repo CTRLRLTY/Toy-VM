@@ -44,11 +44,11 @@ static void regselect (ParseOps *ops) {
 
 static void reg2reg(ParseOps *ops) {
     uint8_t byte = *ops->vm->codeptr;
-    uint8_t lnib = byte & 0b1111; 
     uint8_t hnib = byte >> 4 & 0b1111;
+    uint8_t lnib = byte & 0b1111; 
     ops->vm->codeptr++;
-    ops->regdst = &ops->vm->gpr[lnib];
-    ops->regsrc = &ops->vm->gpr[hnib];
+    ops->regdst = &ops->vm->gpr[hnib];
+    ops->regsrc = &ops->vm->gpr[lnib];
 }
 
 static void imm2reg(ParseOps *ops) {
@@ -117,11 +117,15 @@ static void push_reg(ParseOps *ops) {
 }
 
 static void add_reg2reg(ParseOps *ops) {
-    *ops->regsrc += *ops->regdst;
+    *ops->regdst += *ops->regsrc;
 }
 
 static void sub_reg2reg(ParseOps *ops) {
-    *ops->regsrc -= *ops->regdst;
+    *ops->regdst -= *ops->regsrc;
+}
+
+static void mul_reg2reg(ParseOps *ops) {
+    *ops->regdst *= *ops->regsrc;
 }
 
 static void set_imm2reg(ParseOps *ops) {
@@ -163,6 +167,7 @@ void ti_execute_byte(ti_vm *vm) {
             case ASM_SET_IMM2REG: chain_parse(vm, 2, imm2reg, set_imm2reg); break;
             case ASM_ADD_REG2REG: chain_parse(vm, 2, reg2reg, add_reg2reg); break;
             case ASM_SUB_REG2REG: chain_parse(vm, 2, reg2reg, sub_reg2reg); break;
+            case ASM_MUL_REG2REG: chain_parse(vm, 2, reg2reg, mul_reg2reg); break;
         }
     }
 }

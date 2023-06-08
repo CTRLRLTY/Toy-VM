@@ -8,7 +8,7 @@ int main(void) {
 
     uint8_t code[] = {
         ASM_SET_IMM2REG,  0b00000001, 5,
-        ASM_ADD_REG2REG,  0b00000000,
+        ASM_MUL_REG2REG, 0b00000000, 
         ASM_CMP,  0b00000000,
         ASM_JMP_LT, 1, 12,
         ASM_PUSH_REG,  0b00000000,

@@ -15,6 +15,7 @@ typedef enum TI_ASM {
     ASM_SET_IMM2REG,
     ASM_ADD_REG2REG,
     ASM_SUB_REG2REG,
+    ASM_MUL_REG2REG,
 
     ASM_EXCEED = 256
 } TI_ASM;
