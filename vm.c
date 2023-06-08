@@ -150,8 +150,6 @@ static void chain_parse(ti_vm* vm, size_t count, ...) {
 }
 
 void ti_execute_byte(ti_vm *vm) {
-#define FORWARD(amount) vm->codeptr += amount
-
     while (vm->codeptr - vm->codebase < vm->codesz) {
         switch (*vm->codeptr) {
             case ASM_CMP: chain_parse(vm, 2, reg2reg, compare); break;
@@ -167,6 +165,4 @@ void ti_execute_byte(ti_vm *vm) {
             case ASM_SUB_REG2REG: chain_parse(vm, 2, reg2reg, sub_reg2reg); break;
         }
     }
-
-#undef FORWARD
 }
