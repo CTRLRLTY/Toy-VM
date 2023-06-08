@@ -38,7 +38,7 @@ typedef struct PasrseOps {
 typedef void (*parsefn)(ParseOps *ops);
 
 static void regselect (ParseOps *ops) {
-    uint8_t index = *ops->vm->codeptr;
+    uint8_t index = *ops->vm->codeptr++;
     ops->regdst = &ops->vm->gpr[index];
 }
 
@@ -70,6 +70,46 @@ static void jmp(ParseOps *ops) {
     opsize index = 0;
     memcpy(&index, ops->vm->codeptr, bytesz);
     ops->vm->codeptr = &ops->vm->codebase[index];
+}
+
+static void nojmp(ParseOps *ops) {
+    uint8_t bytesz = *ops->vm->codeptr++;
+    ops->vm->codeptr += bytesz;
+}
+
+static void jmp_eq(ParseOps *ops) {
+    if (ops->vm->cmpbuf1 == ops->vm->cmpbuf2)
+        jmp(ops);
+    else
+        nojmp(ops);
+}
+
+static void jmp_ge(ParseOps *ops) {
+    if (ops->vm->cmpbuf1 >= ops->vm->cmpbuf2)
+        jmp(ops);
+    else
+        nojmp(ops);
+}
+
+static void jmp_le(ParseOps *ops) {
+    if (ops->vm->cmpbuf1 <= ops->vm->cmpbuf2)
+        jmp(ops);
+    else
+        nojmp(ops);
+}
+
+static void jmp_gt(ParseOps *ops) {
+    if (ops->vm->cmpbuf1 > ops->vm->cmpbuf2)
+        jmp(ops);
+    else
+        nojmp(ops);
+}
+
+static void jmp_lt(ParseOps *ops) {
+    if (ops->vm->cmpbuf1 < ops->vm->cmpbuf2)
+        jmp(ops);
+    else
+        nojmp(ops);
 }
 
 static void push_reg(ParseOps *ops) {
@@ -110,26 +150,16 @@ void ti_execute_byte(ti_vm *vm) {
 
     while (vm->codeptr - vm->codebase < vm->codesz) {
         switch (*vm->codeptr) {
-            case ASM_CMP: {
-                chain_parse(vm, 2, reg2reg, compare);
-                break;
-            }
-            case ASM_JMP: {
-                chain_parse(vm, 1, jmp);
-                break;
-            }
-            case ASM_PUSH_REG: {
-                chain_parse(vm, 2, regselect, push_reg);
-                break;
-            }
-            case ASM_SET_IMM2REG: {
-                chain_parse(vm, 2, imm2reg, set_imm2reg);
-                break;
-            }
-            case ASM_ADD_REG2REG: {
-                chain_parse(vm, 2, reg2reg, add_reg2reg);
-                break;
-            } 
+            case ASM_CMP: chain_parse(vm, 2, reg2reg, compare); break;
+            case ASM_JMP: chain_parse(vm, 1, jmp); break;
+            case ASM_JMP_EQ: chain_parse(vm, 1, jmp_eq); break;
+            case ASM_JMP_GE: chain_parse(vm, 1, jmp_ge); break;
+            case ASM_JMP_LE: chain_parse(vm, 1, jmp_le); break;
+            case ASM_JMP_GT: chain_parse(vm, 1, jmp_gt); break;
+            case ASM_JMP_LT: chain_parse(vm, 1, jmp_lt); break;
+            case ASM_PUSH_REG: chain_parse(vm, 2, regselect, push_reg); break;
+            case ASM_SET_IMM2REG: chain_parse(vm, 2, imm2reg, set_imm2reg); break;
+            case ASM_ADD_REG2REG: chain_parse(vm, 2, reg2reg, add_reg2reg); break;
         }
     }
 
