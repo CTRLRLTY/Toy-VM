@@ -7,6 +7,27 @@
 #include "scanner.h"
 
 
+static Token make_token(Scanner* scanner, TokenType type) {
+    Token token;
+    token.type = type;
+    token.start = scanner->start;
+    token.length = (int)(scanner->current - scanner->start);
+    token.line = scanner->line;
+    return token;
+}
+
+static Token error_token(Scanner* scanner, char* errmsg) {
+    Token token;
+    token.type = TOKEN_ERROR;
+    token.start = errmsg;
+    token.line = scanner->line;
+    return token;
+}
+
+static Token invalid_opcode_token(Scanner* scanner) {
+    return error_token(scanner, "Unrecognized opcode");
+}
+
 static size_t lexemelen(Scanner *scanner) {
     return scanner->current - scanner->start;
 }
@@ -39,60 +60,11 @@ static bool islexeme(Scanner *scanner, size_t length, const char *lexeme) {
     return memcmp(scanner->start, lexeme, length) == 0;
 }
 
-static void init_token_list(TokenList* tokens) {
-    tokens->capacity = 0;
-    tokens->size = 100;
-    tokens->d = (Token*)malloc(sizeof(Token)*tokens->size);
-}
-
-static void add_token(TokenList* tokens, Token tkn) {
-    size_t capacity = tokens->capacity++;
-
-    if (capacity > tokens->size) {
-        tokens->size += 100;
-        tokens->d = (Token*)realloc(tokens->d, tokens->size);
-
-        if (tokens->d == NULL) {
-            perror("Can't add token");
-            exit(1);
-        }
-    }
-
-    tokens->d[capacity] = tkn;
-}
-
-static void free_token_list(TokenList* tokens) {
-    tokens->size = 100;
-    tokens->capacity = 0;
-    free(tokens->d);
-}
-
 void init_scanner(Scanner* scanner, char* source) {
     scanner->start = source;
     scanner->current = source;
     scanner->line = 1;
     init_token_list(&scanner->tokens);
-}
-
-static Token make_token(Scanner* scanner, TokenType type) {
-    Token token;
-    token.type = type;
-    token.start = scanner->start;
-    token.length = (int)(scanner->current - scanner->start);
-    token.line = scanner->line;
-    return token;
-}
-
-static Token error_token(Scanner* scanner, char* errmsg) {
-    Token token;
-    token.type = TOKEN_ERROR;
-    token.start = errmsg;
-    token.line = scanner->line;
-    return token;
-}
-
-static Token invalid_opcode_token(Scanner* scanner) {
-    return error_token(scanner, "Unrecognized opcode");
 }
 
 static Token scan_number(Scanner* scanner) {
@@ -122,6 +94,8 @@ static Token scan_identifier(Scanner *scanner) {
             return islexeme(scanner, 4, "jump") ? make_token(scanner, TOKEN_JMP) : invalid_opcode_token(scanner);
         case 'm':
             return islexeme(scanner, 3, "mul") ? make_token(scanner, TOKEN_MUL) : invalid_opcode_token(scanner);
+        case 'p':
+            return islexeme(scanner, 4, "push") ? make_token(scanner, TOKEN_PUSH) : invalid_opcode_token(scanner);
     }
 }
 

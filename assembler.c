@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "assembler.h"
+
 
 static char* read_file(const char* path) {
     FILE* file = fopen(path, "rb");
@@ -28,6 +30,9 @@ CANT_OPEN_FILE:
 
 static void run_file(const char* path) {
     char* source = read_file(path);
+    Scanner scanner;
+    init_scanner(&scanner, source);
+    start_scanner(&scanner);
 }
 
 
