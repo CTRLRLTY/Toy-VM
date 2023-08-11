@@ -4,7 +4,9 @@
         "asm.h": "c",
         "object.h": "c",
         "memory.h": "c",
-        "table.h": "c"
+        "table.h": "c",
+        "token.h": "c",
+        "compiler.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
