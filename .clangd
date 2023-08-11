@@ -1,0 +1,4 @@
+CompileFlags:
+  add: [-std=c23]
+  CompilationDatabase: ./Debug/
+
