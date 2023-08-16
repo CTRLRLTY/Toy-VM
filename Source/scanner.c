@@ -152,6 +152,8 @@ static Token scan_identifier(Scanner *scanner) {
         switch (current(scanner)) {
                 case 'a':
                         return islexeme(scanner, 3, "add") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_ADD)) : invalid_opcode_token(scanner);
+                case 'c':
+                        return islexeme(scanner, 3, "cmp") ? (forwardby(scanner, 3)), make_token(scanner, TOKEN_CMP) : invalid_opcode_token(scanner);
                 case 's': 
                         switch (at(scanner, 1)) {
                                 case 'e': 
@@ -160,7 +162,14 @@ static Token scan_identifier(Scanner *scanner) {
                                         return islexeme(scanner, 3, "sub") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_SUB)) : invalid_opcode_token(scanner);
                         }
                 case 'j': 
-                        return islexeme(scanner, 3, "jmp") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_JMP)) : invalid_opcode_token(scanner);
+                        switch(at(scanner, 1)) {
+                                case 'e':
+                                        return islexeme(scanner, 2, "je") ? (forwardby(scanner, 2), make_token(scanner, TOKEN_JMP_EQ)) : invalid_opcode_token(scanner);
+                                case 'l':
+                                        return islexeme(scanner, 2, "jl") ? (forwardby(scanner, 2), make_token(scanner, TOKEN_JMP_LE)) : invalid_opcode_token(scanner);
+                                case 'm':
+                                        return islexeme(scanner, 3, "jmp") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_JMP)) : invalid_opcode_token(scanner);
+                        }
                 case 'm':
                         return islexeme(scanner, 3, "mul") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_MUL)) : invalid_opcode_token(scanner);
                 case 'p':
