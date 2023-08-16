@@ -4,44 +4,46 @@
 #include <stdbool.h>
 
 typedef enum TOKEN {
-    TOKEN_SET,
-    TOKEN_JMP,
-    TOKEN_INTEGER,
-    TOKEN_DECIMAL,
-    TOKEN_MUL,
-    TOKEN_ERROR,
-    TOKEN_PUSH,
-    TOKEN_COMMA,
-    TOKEN_EOF,
-    TOKEN_R1,
-    TOKEN_R2,
-    TOKEN_R3,
-    TOKEN_R4,
-    TOKEN_R5,
-    TOKEN_R6,
-    TOKEN_R7,
-    TOKEN_R8,
-    TOKEN_R9,
-    TOKEN_R10,
-    TOKEN_R11,
-    TOKEN_R12,
-    TOKEN_R13,
-    TOKEN_R14,
-    TOKEN_R15,
-    TOKEN_R16,
+        TOKEN_ADD,
+        TOKEN_SUB,
+        TOKEN_SET,
+        TOKEN_JMP,
+        TOKEN_INTEGER,
+        TOKEN_DECIMAL,
+        TOKEN_MUL,
+        TOKEN_ERROR,
+        TOKEN_PUSH,
+        TOKEN_COMMA,
+        TOKEN_EOF,
+        TOKEN_R1,
+        TOKEN_R2,
+        TOKEN_R3,
+        TOKEN_R4,
+        TOKEN_R5,
+        TOKEN_R6,
+        TOKEN_R7,
+        TOKEN_R8,
+        TOKEN_R9,
+        TOKEN_R10,
+        TOKEN_R11,
+        TOKEN_R12,
+        TOKEN_R13,
+        TOKEN_R14,
+        TOKEN_R15,
+        TOKEN_R16,
 } TokenType;
 
 typedef struct Token {
-    TokenType type;
-    const char* start;
-    int length;
-    int line;
+        TokenType type;
+        const char* start;
+        int length;
+        int line;
 } Token;
 
 typedef struct TokenList {
-    size_t size;
-    size_t capacity;
-    Token* d;
+        size_t size;
+        size_t capacity;
+        Token* d;
 } TokenList;
 
 bool is_regint_token(Token* token, TokenType* reginttype);
