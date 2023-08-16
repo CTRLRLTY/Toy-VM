@@ -12,6 +12,7 @@ typedef enum TOKEN {
     TOKEN_ERROR,
     TOKEN_PUSH,
     TOKEN_COMMA,
+    TOKEN_EOF,
     TOKEN_R1,
     TOKEN_R2,
     TOKEN_R3,

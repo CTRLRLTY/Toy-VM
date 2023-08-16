@@ -149,7 +149,7 @@ static Token scan_identifier(Scanner *scanner) {
         case 's': 
             return islexeme(scanner, 3, "set") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_SET)) : invalid_opcode_token(scanner);
         case 'j': 
-            return islexeme(scanner, 4, "jump") ? (forwardby(scanner, 4), make_token(scanner, TOKEN_JMP)) : invalid_opcode_token(scanner);
+            return islexeme(scanner, 3, "jmp") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_JMP)) : invalid_opcode_token(scanner);
         case 'm':
             return islexeme(scanner, 3, "mul") ? (forwardby(scanner, 3), make_token(scanner, TOKEN_MUL)) : invalid_opcode_token(scanner);
         case 'p':
@@ -182,6 +182,9 @@ SCAN:
         case '7': case '8':
         case '9': case '0':
             return scan_number(scanner);
+
+        case '\0':
+            return make_token(scanner, TOKEN_EOF);
         default:
             return scan_identifier(scanner);
     }

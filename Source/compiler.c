@@ -66,6 +66,13 @@ void compile(Compiler* compiler) {
 
                                                 break;
                                         }
+                        case TOKEN_JMP: {
+                                                Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
+                                                if(is_regint_token(ntkn, NULL)) {
+                                                }
+                                                break;
+                                        }
+
                 }
         }
 }

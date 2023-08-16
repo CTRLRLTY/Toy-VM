@@ -66,7 +66,7 @@ static void compare(ParseOps *ops) {
 }
 
 static void jmp(ParseOps *ops) {
-    uint8_t bytesz = *ops->vm->codeptr++;
+    uint8_t bytesz = *ops->vm->codeptr++; //todo: read 4byte addr instead of 1byte
     opsize index = 0;
     memcpy(&index, ops->vm->codeptr, bytesz);
     ops->vm->codeptr = &ops->vm->codebase[index];
