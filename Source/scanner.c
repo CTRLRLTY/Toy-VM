@@ -106,9 +106,12 @@ static Token scan_regint(Scanner *scanner) {
 
         short idx = 0;
         char nc = current(scanner);
+
         if (nc > '0' && nc <= '9') {
                 forward(scanner);
                 idx = (short) (atoi(&c) + atoi(&nc));
+        } else {
+                idx = (short) atoi(&c);
         }
 
         switch (idx)

@@ -51,13 +51,13 @@ void compile(Compiler* compiler) {
                                                 Token *nnntkn = get_token(compiler->tokens, ++i);
                                                 TokenType type;
 
-                                                if(is_regint_token(ntkn, NULL)) {
-                                                        if(is_token_type(nntkn, TOKEN_COMMA)) {
-                                                                if(is_token_type(nnntkn, TOKEN_INTEGER)) {
+                                                if (is_regint_token(ntkn, NULL)) {
+                                                        if (is_token_type(nntkn, TOKEN_COMMA)) {
+                                                                if (is_token_type(nnntkn, TOKEN_INTEGER)) {
                                                                         add_byte(&compiler->bytes, ASM_SET_IMM2REG);
                                                                         add_byte(&compiler->bytes, atoi(nnntkn->start));
                                                                 }
-                                                                else if(is_regint_token(nnntkn, &type)) {
+                                                                else if (is_regint_token(nnntkn, &type)) {
                                                                         add_byte(&compiler->bytes, ASM_SET_REG2REG);
                                                                         add_byte(&compiler->bytes, regint_byte(type));
                                                                 }
@@ -68,7 +68,16 @@ void compile(Compiler* compiler) {
                                         }
                         case TOKEN_JMP: {
                                                 Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
-                                                if(is_regint_token(ntkn, NULL)) {
+                                                Token *nntkn = get_token(compiler->tokens, ++i);
+                                                Token *nnntkn = get_token(compiler->tokens, ++i);
+
+                                                if (is_regint_token(ntkn, NULL)) {
+                                                        if (is_token_type(nntkn, TOKEN_COMMA)) {
+                                                                if (is_token_type(nnntkn, TOKEN_INTEGER)) {
+                                                                        add_byte(&compiler->bytes, ASM_JMP);
+                                                                        add_byte(&compiler->bytes, atoi(nnntkn->start));
+                                                                }
+                                                        }
                                                 }
                                                 break;
                                         }
