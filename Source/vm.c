@@ -148,11 +148,15 @@ static void sub_reg2reg(ParseOps *ops) {
         *ops->regdst -= *ops->regsrc;
 }
 
+static void subf_reg2reg(ParseOps *ops) {
+        *ops->regfdst -= *ops->regfsrc;
+}
+
 static void mul_reg2reg(ParseOps *ops) {
         *ops->regdst *= *ops->regsrc;
 }
 
-static void mul_regf2regf(ParseOps *ops) {
+static void mulf_reg2reg(ParseOps *ops) {
         *ops->regfdst *= *ops->regfsrc;
 }
 
@@ -207,8 +211,9 @@ void ti_execute_byte(ti_vm *vm, uint8_t *code, size_t code_size) {
                         case ASM_ADD_REG2REG: chain_parse(vm, 2, reg2reg, add_reg2reg); break;
                         case ASM_ADDF_REG2REG: chain_parse(vm, 2, regf2regf, addf_reg2reg); break;
                         case ASM_SUB_REG2REG: chain_parse(vm, 2, reg2reg, sub_reg2reg); break;
+                        case ASM_SUBF_REG2REG: chain_parse(vm, 2, regf2regf, subf_reg2reg); break;
                         case ASM_MUL_REG2REG: chain_parse(vm, 2, reg2reg, mul_reg2reg); break;
-                        case ASM_MULF_REG2REG: chain_parse(vm, 2, regf2regf, mul_regf2regf); break;
+                        case ASM_MULF_REG2REG: chain_parse(vm, 2, regf2regf, mulf_reg2reg); break;
                 }
         }
 }
