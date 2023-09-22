@@ -164,6 +164,10 @@ static void div_reg2reg(ParseOps *ops) {
         *ops->regdst /= *ops->regsrc;
 }
 
+static void divf_reg2reg(ParseOps *ops) {
+        *ops->regfdst /= *ops->regfsrc;
+}
+
 static void set_imm2reg(ParseOps *ops) {
         *ops->regdst = 0;
         memcpy(ops->regdst, ops->vm->codeptr, ops->immsize);
@@ -219,6 +223,7 @@ void ti_execute_byte(ti_vm *vm, uint8_t *code, size_t code_size) {
                         case ASM_MUL_REG2REG: chain_parse(vm, 2, reg2reg, mul_reg2reg); break;
                         case ASM_MULF_REG2REG: chain_parse(vm, 2, regf2regf, mulf_reg2reg); break;
                         case ASM_DIV_REG2REG: chain_parse(vm, 2, reg2reg, div_reg2reg); break;
+                        case ASM_DIVF_REG2REG: chain_parse(vm, 2, regf2regf, divf_reg2reg); break;
                 }
         }
 }
