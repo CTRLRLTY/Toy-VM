@@ -18,8 +18,8 @@ typedef struct ti_vm {
    int64_t *stack;
    int64_t *stackptr;
    size_t stacksz;
-   int64_t gpr[4];
-   double  gprf[4];
+   int64_t gpr[16];
+   double  gprf[16];
 
    opsize cmpbuf1;
    opsize cmpbuf2;
