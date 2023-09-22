@@ -26,6 +26,6 @@ typedef struct ti_vm {
 } ti_vm;
 
 void ti_init_vm(ti_vm *vm);
-void ti_execute_byte(ti_vm *vm);
+void ti_execute_byte(ti_vm *vm, uint8_t *code, size_t code_size);
 
 #endif // TOY_VM_H

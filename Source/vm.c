@@ -187,7 +187,11 @@ static void chain_parse(ti_vm* vm, size_t count, ...) {
         va_end(parsers);
 }
 
-void ti_execute_byte(ti_vm *vm) {
+void ti_execute_byte(ti_vm *vm, uint8_t *code, size_t code_size) {
+        vm->codebase = code;
+        vm->codeptr = vm->codebase;
+        vm->codesz = code_size; 
+
         while (vm->codeptr - vm->codebase < vm->codesz) {
                 switch (*vm->codeptr) {
                         case ASM_CMP: chain_parse(vm, 2, reg2reg, compare); break;

@@ -18,11 +18,8 @@ int main(void) {
         // ASM_PUSH_REG,  0b00000000,
         // ASM_SUB_REG2REG, 0b00000000, 
     };
- 
-    vm.codebase = code;
-    vm.codeptr = vm.codebase;
-    vm.codesz = sizeof(code)/sizeof(code[0]);
-    ti_execute_byte(&vm);
+
+    ti_execute_byte(&vm, code, sizeof(code)/sizeof(code[0]));
 
     return 0;
 }
