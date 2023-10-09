@@ -2,6 +2,9 @@
 #define TI_TOKEN
 
 #include <stdbool.h>
+#include <stddef.h>
+
+#include "byte.h"
 
 typedef enum TOKEN {
         TOKEN_ADD,
@@ -51,7 +54,7 @@ typedef struct TokenList {
         Token* d;
 } TokenList;
 
-bool is_regint_token(Token* token, TokenType* reginttype);
+bool is_regint_token(Token* token, Byte* regint_byte);
 bool is_token_type(Token* token, TokenType type);
 
 void init_token_list(TokenList* tokens);

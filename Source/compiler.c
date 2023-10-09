@@ -1,8 +1,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "compiler.h"
 #include "asm.h"
+
+static Byte merge_byte(Byte highbit, Byte lowbit) {
+        return (highbit << 0xf | lowbit);
+}
 
 Byte regint_byte(TokenType type) {
         switch (type) {
@@ -44,22 +49,29 @@ void compile(Compiler* compiler) {
         for (size_t i = 0; i < compiler->tokens->size; ++i) {
                 Token* tkn = get_token(compiler->tokens, i);
 
+                if (tkn == NULL) 
+                        return;
+
                 switch (tkn->type) {
                         case TOKEN_SET: {
                                                 Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
                                                 Token *nntkn = get_token(compiler->tokens, ++i);
                                                 Token *nnntkn = get_token(compiler->tokens, ++i);
-                                                TokenType type;
 
-                                                if (is_regint_token(ntkn, NULL)) {
+                                                Byte regint_src_byte;
+
+                                                if (is_regint_token(ntkn, &regint_src_byte)) {
+                                                        Byte regint_dst_byte;
+
                                                         if (is_token_type(nntkn, TOKEN_COMMA)) {
                                                                 if (is_token_type(nnntkn, TOKEN_INTEGER)) {
                                                                         add_byte(&compiler->bytes, ASM_SET_IMM2REG);
-                                                                        add_byte(&compiler->bytes, atoi(nnntkn->start));
+                                                                        add_byte(&compiler->bytes, merge_byte(regint_src_byte, 8));
+                                                                        add_byte64(&compiler->bytes, atol(nnntkn->start));
                                                                 }
-                                                                else if (is_regint_token(nnntkn, &type)) {
+                                                                else if (is_regint_token(nnntkn, &regint_dst_byte)) {
                                                                         add_byte(&compiler->bytes, ASM_SET_REG2REG);
-                                                                        add_byte(&compiler->bytes, regint_byte(type));
+                                                                        add_byte(&compiler->bytes, merge_byte(regint_dst_byte, regint_src_byte));
                                                                 }
                                                         }
                                                 }
@@ -81,6 +93,8 @@ void compile(Compiler* compiler) {
                                                 }
                                                 break;
                                         }
+                        case TOKEN_EOF:
+                                        return;
 
                 }
         }

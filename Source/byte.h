@@ -2,8 +2,10 @@
 #define TI_BYTE
 
 #include <stdint.h>
+#include <stddef.h>
 
 typedef uint8_t Byte;
+typedef uint64_t Byte64;
 
 #define BYTE_R1 (Byte)0x0
 #define BYTE_R2 (Byte)0x1
@@ -31,5 +33,6 @@ typedef struct ByteList {
 void init_byte_list(ByteList* bytes);
 void free_byte_list(ByteList* bytes);
 void add_byte(ByteList* bytes, Byte b);
+void add_byte64(ByteList* bytes, Byte64 b64);
 
 #endif

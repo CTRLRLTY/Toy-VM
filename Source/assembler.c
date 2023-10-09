@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include "assembler.h"
+#include "compiler.h"
+#include "vm.h"
 
 
 static char* read_file(const char* path) {
@@ -33,6 +35,14 @@ static void run_file(const char* path) {
     Scanner scanner;
     init_scanner(&scanner, source);
     start_scanner(&scanner);
+
+    Compiler compiler;
+    init_compiler(&compiler, &scanner.tokens);
+    compile(&compiler);
+
+    ti_vm vm;
+    ti_init_vm(&vm);
+    ti_execute_byte(&vm, compiler.bytes.d, compiler.bytes.capacity);
 }
 
 

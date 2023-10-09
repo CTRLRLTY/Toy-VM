@@ -1,15 +1,12 @@
-add_library(
-        AssemblerSource
+add_library(AssemblerSource
         scanner.c
-        token.c
-        byte.c)
-
-add_library(
-        VMSource 
-        compiler.c
-        byte.c
         vm.c
-        )
+        compiler.c
+        token.c
+        byte.c
+)
+
+add_library(VMSource vm.c)
 
 add_executable(Assembler assembler.c)
 add_executable(VirtualMachine main.c)
