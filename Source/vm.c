@@ -1,4 +1,5 @@
 #include "vm.h"
+#include "context.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -132,6 +133,11 @@ static void jmp_lt(ParseOps *ops) {
                 nojmp(ops);
 }
 
+static void icall(ParseOps *ops) {
+        uint8_t index = *ops->vm->codeptr++;
+        ctx_call_func(ops->vm, index);
+}
+
 static void push_reg(ParseOps *ops) {
         push(ops->vm, ops->regdst);
 }
@@ -224,6 +230,7 @@ void ti_execute_byte(ti_vm *vm, uint8_t *code, size_t code_size) {
                         case ASM_MULF_REG2REG: chain_parse(vm, 2, regf2regf, mulf_reg2reg); break;
                         case ASM_DIV_REG2REG: chain_parse(vm, 2, reg2reg, div_reg2reg); break;
                         case ASM_DIVF_REG2REG: chain_parse(vm, 2, regf2regf, divf_reg2reg); break;
+                        case ASM_ICALL: chain_parse(vm, 1, icall); break;
                 }
         }
 }

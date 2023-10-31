@@ -53,48 +53,50 @@ void compile(Compiler* compiler) {
                         return;
 
                 switch (tkn->type) {
-                        case TOKEN_SET: {
-                                                Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
-                                                Token *nntkn = get_token(compiler->tokens, ++i);
-                                                Token *nnntkn = get_token(compiler->tokens, ++i);
+                        case TOKEN_SET: 
+                                {
+                                        Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
+                                        Token *nntkn = get_token(compiler->tokens, ++i);
+                                        Token *nnntkn = get_token(compiler->tokens, ++i);
 
-                                                Byte regint_src_byte;
+                                        Byte regint_src_byte;
 
-                                                if (is_regint_token(ntkn, &regint_src_byte)) {
-                                                        Byte regint_dst_byte;
+                                        if (is_regint_token(ntkn, &regint_src_byte)) {
+                                                Byte regint_dst_byte;
 
-                                                        if (is_token_type(nntkn, TOKEN_COMMA)) {
-                                                                if (is_token_type(nnntkn, TOKEN_INTEGER)) {
-                                                                        add_byte(&compiler->bytes, ASM_SET_IMM2REG);
-                                                                        add_byte(&compiler->bytes, merge_byte(regint_src_byte, 8));
-                                                                        add_byte64(&compiler->bytes, atol(nnntkn->start));
-                                                                }
-                                                                else if (is_regint_token(nnntkn, &regint_dst_byte)) {
-                                                                        add_byte(&compiler->bytes, ASM_SET_REG2REG);
-                                                                        add_byte(&compiler->bytes, merge_byte(regint_dst_byte, regint_src_byte));
-                                                                }
+                                                if (is_token_type(nntkn, TOKEN_COMMA)) {
+                                                        if (is_token_type(nnntkn, TOKEN_INTEGER)) {
+                                                                add_byte(&compiler->bytes, ASM_SET_IMM2REG);
+                                                                add_byte(&compiler->bytes, merge_byte(regint_src_byte, 8));
+                                                                add_byte64(&compiler->bytes, atol(nnntkn->start));
+                                                        }
+                                                        else if (is_regint_token(nnntkn, &regint_dst_byte)) {
+                                                                add_byte(&compiler->bytes, ASM_SET_REG2REG);
+                                                                add_byte(&compiler->bytes, merge_byte(regint_dst_byte, regint_src_byte));
                                                         }
                                                 }
-
-                                                break;
                                         }
-                        case TOKEN_JMP: {
-                                                Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
-                                                Token *nntkn = get_token(compiler->tokens, ++i);
-                                                Token *nnntkn = get_token(compiler->tokens, ++i);
 
-                                                if (is_regint_token(ntkn, NULL)) {
-                                                        if (is_token_type(nntkn, TOKEN_COMMA)) {
-                                                                if (is_token_type(nnntkn, TOKEN_INTEGER)) {
-                                                                        add_byte(&compiler->bytes, ASM_JMP);
-                                                                        add_byte(&compiler->bytes, atoi(nnntkn->start));
-                                                                }
+                                        break;
+                                }
+                        case TOKEN_JMP: 
+                                {
+                                        Token* ntkn = ntkn = get_token(compiler->tokens, ++i);
+                                        Token *nntkn = get_token(compiler->tokens, ++i);
+                                        Token *nnntkn = get_token(compiler->tokens, ++i);
+
+                                        if (is_regint_token(ntkn, NULL)) {
+                                                if (is_token_type(nntkn, TOKEN_COMMA)) {
+                                                        if (is_token_type(nnntkn, TOKEN_INTEGER)) {
+                                                                add_byte(&compiler->bytes, ASM_JMP);
+                                                                add_byte(&compiler->bytes, atoi(nnntkn->start));
                                                         }
                                                 }
-                                                break;
                                         }
+                                        break;
+                                }
                         case TOKEN_EOF:
-                                        return;
+                                return;
 
                 }
         }

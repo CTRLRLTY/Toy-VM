@@ -38,7 +38,7 @@ void add_byte64(ByteList* bytes, Byte64 b64) {
 
         if (capacity > bytes->size) {
                 bytes->size += 100;
-                bytes->d = (Byte*)realloc(bytes->d, bytes->size);
+                bytes->d = (Byte*)realloc(bytes->d, sizeof(Byte64) * bytes->size);
 
                 if (bytes->d == NULL) {
                         perror("Can't add bytecode");

@@ -24,6 +24,8 @@ typedef enum TI_ASM {
     ASM_DIV_REG2REG,
     ASM_DIVF_REG2REG,
 
+    ASM_ICALL,
+
     ASM_FINISH,
     ASM_EXCEED = 256
 } TI_ASM;

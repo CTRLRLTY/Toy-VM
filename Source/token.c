@@ -56,7 +56,7 @@ void add_token(TokenList* tokens, Token tkn) {
 
     if (capacity > tokens->size) {
         tokens->size += 100;
-        tokens->d = (Token*)realloc(tokens->d, tokens->size);
+        tokens->d = (Token*)realloc(tokens->d, sizeof(Token) * tokens->size);
 
         if (tokens->d == NULL) {
             perror("Can't add token");
